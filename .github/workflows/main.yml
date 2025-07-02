@@ -1,0 +1,39 @@
+name: Node CI
+
+on:
+  - push
+  - pull_request
+
+env:
+  CI: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      # Шаг 1: Клонирование репозитория
+      - uses: actions/checkout@v4
+
+      # Шаг 2: Установка Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Шаг 3: Установка зависимостей проекта
+      - run: make install
+
+      # Шаг 4: Запуск линтера
+      - run: make lint
+
+      # Шаг 5: Запуск тестов
+      - run: make test
+
+      # Шаг 6: Специальный экшен от Hexlet
+      - uses: hexlet-components/hello-from-hexlet-action@release
